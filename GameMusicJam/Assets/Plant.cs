@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Plant : MonoBehaviour
 {
+    private const float INITIAL_SIZE = 0.1f;
     public float growSpeed;
     public float rotateSpeed;
     private List<Node> nodes;
@@ -20,7 +21,8 @@ public class Plant : MonoBehaviour
         lineRenderer = GetComponent<LineRenderer>();
         nodes = new List<Node>();
         addNode(transform.position, transform.rotation, false);
-        endPos = transform.position;
+        endPos = (Vector2)transform.position + (Vector2)(transform.position * Vector2.up * INITIAL_SIZE);
+        lineRenderer.SetPosition(lineRenderer.positionCount - 1, endPos);
         endRotation = transform.rotation;
     }
 
@@ -80,11 +82,12 @@ public class Plant : MonoBehaviour
     }
     public void OnDrawGizmos()
     {
+        Gizmos.color = Color.green;
+        Gizmos.DrawSphere(transform.position, 0.2f);
         if (nodes != null && nodes.Count > 1)
         {
             for (int i = 0; i < nodes.Count - 1; i++)
             {
-                Gizmos.color = Color.green;
                 Gizmos.DrawLine(nodes[i].GetDrawPos(), nodes[i + 1].GetDrawPos());
             }
             Gizmos.DrawLine(nodes[nodes.Count - 1].GetDrawPos(), endPos);
