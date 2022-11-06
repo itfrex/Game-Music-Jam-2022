@@ -6181,13 +6181,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb95d759038f07a44bb4ce1d716c8e73, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  growSpeed: 0.025
-  rotateSpeed: 3
+  growSpeed: 0.03
+  rotateSpeed: 2
   endPos: {x: 0, y: 0}
   endRotation: {x: 0, y: 0, z: 0, w: 0}
   maxlinkLength: 2
   lightSource: {fileID: 67309731}
-  nodePosVariance: 0.2
+  nodePosVariance: 0
   lineRenderer: {fileID: 0}
   layers:
     serializedVersion: 2
@@ -6350,7 +6350,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 833727abe30273e46938fad2b12c5dbe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 100
+  speed: 200
   movement: {x: 0, y: 0}
 --- !u!58 &1187901261
 CircleCollider2D:
@@ -6767,13 +6767,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb95d759038f07a44bb4ce1d716c8e73, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  growSpeed: 0.025
-  rotateSpeed: 3
+  growSpeed: 0.01
+  rotateSpeed: 5
   endPos: {x: 0, y: 0}
   endRotation: {x: 0, y: 0, z: 0, w: 0}
-  maxlinkLength: 2
+  maxlinkLength: 0.1
   lightSource: {fileID: 67309731}
-  nodePosVariance: 0.2
+  nodePosVariance: 0.5
   lineRenderer: {fileID: 0}
   layers:
     serializedVersion: 2

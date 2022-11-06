@@ -12,7 +12,7 @@ public class Plant : MonoBehaviour
     public Quaternion endRotation;
     public float maxlinkLength = 1;
     public GameObject lightSource;
-    public float nodePosVariance = 0.2f;
+    public float nodePosVariance;
     public LineRenderer lineRenderer;
     public LayerMask layers;
     private int maxSize = 128;
@@ -21,6 +21,7 @@ public class Plant : MonoBehaviour
         lineRenderer = GetComponent<LineRenderer>();
         nodes = new List<Node>();
         addNode(transform.position, transform.rotation, false);
+        lineRenderer.SetPosition(0, transform.position);
         endPos = (Vector2)transform.position + (Vector2)(transform.position * Vector2.up * INITIAL_SIZE);
         lineRenderer.SetPosition(lineRenderer.positionCount - 1, endPos);
         endRotation = transform.rotation;
@@ -51,10 +52,8 @@ public class Plant : MonoBehaviour
     private void addNode(Vector2 position, Quaternion rotation, bool doVariance = true){
         Vector2 drawPosVariance = doVariance ? new Vector2(Random.Range(-nodePosVariance, nodePosVariance), Random.Range(-nodePosVariance, nodePosVariance)) : Vector2.zero;
         nodes.Add(new Node(position, rotation, position + drawPosVariance));
-        lineRenderer.positionCount += 1;
         lineRenderer.SetPosition(lineRenderer.positionCount-1, position + drawPosVariance);
-
-        
+        lineRenderer.positionCount += 1;
     }
     private class Node
     {
