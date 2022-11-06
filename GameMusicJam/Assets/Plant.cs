@@ -49,10 +49,9 @@ public class Plant : MonoBehaviour
     private void addNode(Vector2 position, Quaternion rotation, bool doVariance = true){
         Vector2 drawPosVariance = doVariance ? new Vector2(Random.Range(-nodePosVariance, nodePosVariance), Random.Range(-nodePosVariance, nodePosVariance)) : Vector2.zero;
         nodes.Add(new Node(position, rotation, position + drawPosVariance));
-        for(int i = nodes.Count - 1; i < lineRenderer.positionCount; i++)
-        {
-            lineRenderer.SetPosition(i, position + drawPosVariance);
-        }
+        lineRenderer.positionCount += 1;
+        lineRenderer.SetPosition(lineRenderer.positionCount-1, position + drawPosVariance);
+
         
     }
     private class Node
