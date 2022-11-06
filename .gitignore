@@ -26,7 +26,6 @@ sysinfo.txt
 *.user
 *.userprefs
 *.pidb
-*.log
 .DS_Store
 
 ###
@@ -41,5 +40,3 @@ Icon?
 ehthumbs.db
 Thumbs.db
 *.log
-*.log
-GameMusicJam/UserSettings/Layouts/default-2021.dwlt
