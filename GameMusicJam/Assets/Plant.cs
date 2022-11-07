@@ -21,7 +21,7 @@ public class Plant : MonoBehaviour
     public LayerMask layers;
 
     private AudioSource audioSource;
-    private bool audioTrigger = false;
+    public bool isGrowing = false;
     void Start()
     {
         lineRenderer = GetComponent<LineRenderer>();
@@ -46,13 +46,11 @@ public class Plant : MonoBehaviour
             growTowards(lightSource.transform.position);
             playerDist = (Vector2)player.transform.position - endPos;
             audioSource.panStereo = Mathf.Clamp(-playerDist.x/20, -1, 1);
-            if (!audioSource.isPlaying) {
-                audioSource.Play();
-            }
+            isGrowing = true;
         }
         else
         {
-            if (audioSource.isPlaying) { audioSource.Stop(); }
+            isGrowing = false;
         }
 
 
