@@ -4,23 +4,24 @@ using UnityEngine;
 
 public class Plant : MonoBehaviour
 {
-    private const float INITIAL_SIZE = 0.1f;
+    private const float INITIAL_SIZE = 0.5f;
     public float growSpeed;
     public float rotateSpeed;
     private List<Node> nodes;
     public Vector2 endPos;
     public Quaternion endRotation;
+    private Vector2 drawPosVariance = Vector2.zero;
     public float maxlinkLength = 1;
     public GameObject lightSource;
     public float nodePosVariance;
     public LineRenderer lineRenderer;
     public LayerMask layers;
-    private int maxSize = 128;
     void Start()
     {
         lineRenderer = GetComponent<LineRenderer>();
         nodes = new List<Node>();
-        addNode(transform.position, transform.rotation, false);
+        lineRenderer.positionCount += 1;
+        addNode(transform.position, transform.rotation, Vector2.zero);
         lineRenderer.SetPosition(0, transform.position);
         endPos = (Vector2)transform.position + (Vector2)(transform.position * Vector2.up * INITIAL_SIZE);
         lineRenderer.SetPosition(lineRenderer.positionCount - 1, endPos);
@@ -38,6 +39,8 @@ public class Plant : MonoBehaviour
     }
     public void growTowards(Vector3 position)
     {
+        float percentOfLink = Mathf.InverseLerp(0, maxlinkLength, Vector2.Distance(endPos, nodes[nodes.Count - 1].GetPos()));
+        lineRenderer.SetPosition(lineRenderer.positionCount - 1, endPos + (drawPosVariance * percentOfLink));
         Vector2 targetVector = (Vector2)position - endPos;
         Quaternion targetRotation = Quaternion.LookRotation(-targetVector, Vector3.forward);
         endRotation = Quaternion.Slerp(endRotation, targetRotation, Time.deltaTime * rotateSpeed);
@@ -45,15 +48,20 @@ public class Plant : MonoBehaviour
         endRotation.x = 0;
         endPos += (Vector2)(endRotation * Vector2.up * growSpeed);
         if (Vector2.Distance(endPos, nodes[nodes.Count - 1].GetPos()) >= maxlinkLength){
-            addNode(endPos, transform.rotation);
+            addNode(endPos, endRotation, drawPosVariance);
+            drawPosVariance = new Vector2(Random.Range(-nodePosVariance, nodePosVariance), Random.Range(-nodePosVariance, nodePosVariance));
+            percentOfLink = 0;
+            lineRenderer.SetPosition(lineRenderer.positionCount - 1, endPos + (drawPosVariance * percentOfLink));
         }
-        lineRenderer.SetPosition(lineRenderer.positionCount - 1, endPos);
     }
-    private void addNode(Vector2 position, Quaternion rotation, bool doVariance = true){
-        Vector2 drawPosVariance = doVariance ? new Vector2(Random.Range(-nodePosVariance, nodePosVariance), Random.Range(-nodePosVariance, nodePosVariance)) : Vector2.zero;
-        nodes.Add(new Node(position, rotation, position + drawPosVariance));
-        lineRenderer.SetPosition(lineRenderer.positionCount-1, position + drawPosVariance);
+    private void addNode(Vector2 position, Quaternion rotation, Vector2 offset){
+        nodes.Add(new Node(position, rotation, position + offset));
+        lineRenderer.SetPosition(lineRenderer.positionCount-1, position + offset);
         lineRenderer.positionCount += 1;
+    }
+    public void Burn(int startLink)
+    {
+
     }
     private class Node
     {
