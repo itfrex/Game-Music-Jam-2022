@@ -5,6 +5,7 @@ using UnityEngine;
 public class Plant : MonoBehaviour
 {
     private const float INITIAL_SIZE = 0.5f;
+    private const float PITCH_MOD = 20f;
     public float growSpeed;
     public float rotateSpeed;
     private List<Node> nodes;
@@ -12,13 +13,21 @@ public class Plant : MonoBehaviour
     public Quaternion endRotation;
     private Vector2 drawPosVariance = Vector2.zero;
     public float maxlinkLength = 1;
+    public GameObject player;
+    private Vector2 playerDist;
     public GameObject lightSource;
     public float nodePosVariance;
     public LineRenderer lineRenderer;
     public LayerMask layers;
+
+    private AudioSource audioSource;
+    private bool audioTrigger = false;
     void Start()
     {
         lineRenderer = GetComponent<LineRenderer>();
+        audioSource = GetComponent<AudioSource>();
+        audioSource.pitch = 0.8f + (growSpeed)*PITCH_MOD;
+
         nodes = new List<Node>();
         lineRenderer.positionCount += 1;
         addNode(transform.position, transform.rotation, Vector2.zero);
@@ -35,8 +44,20 @@ public class Plant : MonoBehaviour
         if (hit == false)
         {
             growTowards(lightSource.transform.position);
+            playerDist = (Vector2)player.transform.position - endPos;
+            audioSource.panStereo = Mathf.Clamp(-playerDist.x/20, -1, 1);
+            if (!audioSource.isPlaying) {
+                audioSource.Play();
+            }
         }
+        else
+        {
+            if (audioSource.isPlaying) { audioSource.Stop(); }
+        }
+
+
     }
+
     public void growTowards(Vector3 position)
     {
         float percentOfLink = Mathf.InverseLerp(0, maxlinkLength, Vector2.Distance(endPos, nodes[nodes.Count - 1].GetPos()));
