@@ -7,7 +7,7 @@ using System.Linq;
 public class Plant : MonoBehaviour
 {
     private const float INITIAL_SIZE = 0.5f;
-    private const float PITCH_MOD = 20f;
+    private const float PITCH_MOD = 0.05f;
     private const float BURN_TIME = 0.1f;
     private const float CHAR_TIME = 2f;
 
@@ -51,7 +51,7 @@ public class Plant : MonoBehaviour
         burnZones = FindObjectsOfType<BurnZone>();
         player = GameObject.FindGameObjectWithTag("Player");
         lightSources = GameObject.FindGameObjectsWithTag("Light Source").Concat(new GameObject[1] { player }).ToArray();
-        audioSource.pitch = 0.8f + (growSpeed)*PITCH_MOD;
+        audioSource.pitch = 0.8f + (growSpeed*PITCH_MOD);
         material = lineRenderer.material;
         material.SetFloat("_step", 1);
 
@@ -74,8 +74,11 @@ public class Plant : MonoBehaviour
             {
                 growTowards(light.transform.position);
                 playerDist = (Vector2)player.transform.position - endPos;
-                audioSource.panStereo = Mathf.Clamp(-playerDist.x / 20, -1, 1);
+                audioSource.panStereo = Mathf.Clamp(-playerDist.x / 2, -1, 1);
+                audioSource.volume = Mathf.Clamp((1/playerDist.magnitude), 0, 1);
+                if (!audioSource.isPlaying) { audioSource.Play(); }
             }
+            else if(audioSource.isPlaying) { audioSource.Pause(); }
         }
         if(nodes[0].isBurning() && nodes[^1].isBurning())
         {
