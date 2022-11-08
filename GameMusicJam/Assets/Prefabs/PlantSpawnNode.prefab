@@ -46,8 +46,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb95d759038f07a44bb4ce1d716c8e73, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  twigChance: 0.2
+  twigCurliness: 0.5
+  twigLength: 2
   burnParticle: {fileID: 5945464752557600526, guid: c0dfe507ff3a24f48af60dfc34afc5ec, type: 3}
   burnLight: {fileID: 4656506924786056023, guid: 5515be7bbc4e0704f9d47db4780249ba, type: 3}
+  twigObject: {fileID: 2366472414742413394, guid: 56183609d791b4f418bad3c06afe0471, type: 3}
   charredColor:
     serializedVersion: 2
     key0: {r: 0.122641504, g: 0.122641504, b: 0.122641504, a: 1}

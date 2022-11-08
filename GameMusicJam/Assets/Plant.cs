@@ -11,8 +11,13 @@ public class Plant : MonoBehaviour
     private const float BURN_TIME = 0.1f;
     private const float CHAR_TIME = 2f;
 
+    public float twigChance;
+    public float twigCurliness;
+    public float twigLength;
+
     public GameObject burnParticle;
     public GameObject burnLight;
+    public GameObject twigObject;
     public Gradient charredColor;
 
     public float growSpeed;
@@ -91,6 +96,7 @@ public class Plant : MonoBehaviour
         endPos += (Vector2)(endRotation * Vector2.up * growSpeed * Time.deltaTime);
         if (Vector2.Distance(endPos, nodes[^1].GetPos()) >= maxlinkLength){
             addNode(endPos, endRotation, drawPosVariance);
+            if(Random.Range(0, 1f) < twigChance) { addTwig(endPos+drawPosVariance, endRotation); }
             drawPosVariance = new Vector2(Random.Range(-nodePosVariance, nodePosVariance), Random.Range(-nodePosVariance, nodePosVariance));
             percentOfLink = 0;
             lineRenderer.SetPosition(lineRenderer.positionCount - 1, endPos + (drawPosVariance * percentOfLink));
@@ -100,6 +106,11 @@ public class Plant : MonoBehaviour
         nodes.Add(new Node(position, rotation, position + offset));
         lineRenderer.SetPosition(lineRenderer.positionCount-1, position + offset);
         lineRenderer.positionCount += 1;
+    }
+    private void addTwig(Vector2 position, Quaternion rotation)
+    {
+        GameObject twig = Instantiate(twigObject, position, rotation, transform);
+        twig.GetComponent<Twig>().BeginGrowth(twigCurliness, position, rotation, material, twigLength, lineRenderer.colorGradient);
     }
     private void CheckBurnZones()
     {
@@ -144,6 +155,10 @@ public class Plant : MonoBehaviour
         foreach(Light2D l in GetComponentsInChildren<Light2D>())
         {
             l.intensity = 0;
+        }
+        foreach (Twig t in GetComponentsInChildren<Twig>())
+        {
+            t.SetColor(charredColor);
         }
         StartCoroutine(DoChar());
     }
