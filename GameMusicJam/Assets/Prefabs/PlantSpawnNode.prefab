@@ -89,7 +89,7 @@ MonoBehaviour:
   nodePosVariance: 0.2
   layers:
     serializedVersion: 2
-    m_Bits: 8
+    m_Bits: 136
   isGrowing: 0
 --- !u!120 &1333124010762047362
 LineRenderer:
