@@ -1,34 +1,41 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering.Universal;
+using System.Linq;
 
 public class Plant : MonoBehaviour
 {
     private const float INITIAL_SIZE = 0.5f;
     private const float PITCH_MOD = 20f;
-    private const float BURN_TIME = 0.2f;
+    private const float BURN_TIME = 0.1f;
+    private const float CHAR_TIME = 2f;
 
     public GameObject burnParticle;
     public GameObject burnLight;
-    public GameObject smokeParticle;
     public Gradient charredColor;
 
     public float growSpeed;
     public float rotateSpeed;
     private List<Node> nodes;
-    public Vector2 endPos;
-    public Quaternion endRotation;
+    private Vector2 endPos;
+    private Quaternion endRotation;
     private Vector2 drawPosVariance = Vector2.zero;
-    public float maxlinkLength = 1;
-    public GameObject player;
+    [SerializeField]
+    private float maxlinkLength;
+    [SerializeField]
+    private GameObject player;
     private Vector2 playerDist;
-    public GameObject lightSource;
+    [SerializeField]
+    private GameObject[] lightSources;
+
     public float nodePosVariance;
-    public LineRenderer lineRenderer;
+    private LineRenderer lineRenderer;
     public LayerMask layers;
 
     private BurnZone[] burnZones;
-    private List<GameObject> burnParticleList;
+
+    private Material material;
 
     private AudioSource audioSource;
     public bool isGrowing = false;
@@ -37,7 +44,11 @@ public class Plant : MonoBehaviour
         lineRenderer = GetComponent<LineRenderer>();
         audioSource = GetComponent<AudioSource>();
         burnZones = FindObjectsOfType<BurnZone>();
+        player = GameObject.FindGameObjectWithTag("Player");
+        lightSources = GameObject.FindGameObjectsWithTag("Light Source").Concat(new GameObject[1] { player }).ToArray();
         audioSource.pitch = 0.8f + (growSpeed)*PITCH_MOD;
+        material = lineRenderer.material;
+        material.SetFloat("_step", 1);
 
         nodes = new List<Node>();
         lineRenderer.positionCount += 1;
@@ -51,36 +62,34 @@ public class Plant : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        RaycastHit2D hit = Physics2D.Linecast(lightSource.transform.position, endPos, layers);
-        if (hit == false && !nodes[nodes.Count -1].isBurning())
+        foreach(GameObject light in lightSources)
         {
-            growTowards(lightSource.transform.position);
-            playerDist = (Vector2)player.transform.position - endPos;
-            audioSource.panStereo = Mathf.Clamp(-playerDist.x/20, -1, 1);
-            isGrowing = true;
+            RaycastHit2D hit = Physics2D.Linecast(light.transform.position, endPos, layers);
+            if (hit == false && !nodes[nodes.Count - 1].isBurning())
+            {
+                growTowards(light.transform.position);
+                playerDist = (Vector2)player.transform.position - endPos;
+                audioSource.panStereo = Mathf.Clamp(-playerDist.x / 20, -1, 1);
+            }
         }
-        else
+        if(nodes[0].isBurning() && nodes[^1].isBurning())
         {
-            isGrowing = false;
-        }
-        if(nodes[0].isBurning() && nodes[nodes.Count - 1].isBurning())
-        {
-            StartCoroutine(DoChar());
+            BurnAway();
         }
         CheckBurnZones();
     }
 
-    public void growTowards(Vector3 position)
+    public void growTowards(Vector2 position)
     {
         float percentOfLink = Mathf.InverseLerp(0, maxlinkLength, Vector2.Distance(endPos, nodes[nodes.Count - 1].GetPos()));
         lineRenderer.SetPosition(lineRenderer.positionCount - 1, endPos + (drawPosVariance * percentOfLink));
-        Vector2 targetVector = (Vector2)position - endPos;
+        Vector2 targetVector = position - endPos;
         Quaternion targetRotation = Quaternion.LookRotation(-targetVector, Vector3.forward);
-        endRotation = Quaternion.Slerp(endRotation, targetRotation, Time.deltaTime * rotateSpeed);
+        endRotation = Quaternion.RotateTowards(endRotation, targetRotation, Time.deltaTime * rotateSpeed);
         endRotation.y = 0;
         endRotation.x = 0;
         endPos += (Vector2)(endRotation * Vector2.up * growSpeed * Time.deltaTime);
-        if (Vector2.Distance(endPos, nodes[nodes.Count - 1].GetPos()) >= maxlinkLength){
+        if (Vector2.Distance(endPos, nodes[^1].GetPos()) >= maxlinkLength){
             addNode(endPos, endRotation, drawPosVariance);
             drawPosVariance = new Vector2(Random.Range(-nodePosVariance, nodePosVariance), Random.Range(-nodePosVariance, nodePosVariance));
             percentOfLink = 0;
@@ -125,17 +134,27 @@ public class Plant : MonoBehaviour
         bool alreadyBurning = nodes[nodeIndex].Ignite();
         yield return new WaitForSeconds(BURN_TIME);
     }
+    public void BurnAway()
+    {
+        lineRenderer.colorGradient = charredColor;        
+        foreach (ParticleSystem p in GetComponentsInChildren<ParticleSystem>())
+        {
+            p.Stop();
+        }
+        foreach(Light2D l in GetComponentsInChildren<Light2D>())
+        {
+            l.intensity = 0;
+        }
+        StartCoroutine(DoChar());
+    }
     public IEnumerator DoChar()
     {
-        lineRenderer.colorGradient = charredColor;
-        foreach (Transform child in transform)
+        for(float timer = CHAR_TIME; timer > 0; timer -= Time.deltaTime)
         {
-            Destroy(child.gameObject);
+            material.SetFloat("_step", timer / CHAR_TIME);
+            yield return 0;
         }
-        yield return new WaitForSeconds(BURN_TIME);
         Destroy(gameObject);
-
-
     }
     private class Node
     {

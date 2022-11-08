@@ -48,7 +48,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   burnParticle: {fileID: 5945464752557600526, guid: c0dfe507ff3a24f48af60dfc34afc5ec, type: 3}
   burnLight: {fileID: 4656506924786056023, guid: 5515be7bbc4e0704f9d47db4780249ba, type: 3}
-  smokeParticle: {fileID: 3798199054972060677, guid: 053d486f4d52c4448b3606a4ccd23bcf, type: 3}
   charredColor:
     serializedVersion: 2
     key0: {r: 0.122641504, g: 0.122641504, b: 0.122641504, a: 1}
@@ -79,14 +78,11 @@ MonoBehaviour:
     m_NumColorKeys: 2
     m_NumAlphaKeys: 2
   growSpeed: 10
-  rotateSpeed: 3
-  endPos: {x: 0, y: 0}
-  endRotation: {x: 0, y: 0, z: 0, w: 0}
+  rotateSpeed: 360
   maxlinkLength: 2
   player: {fileID: 0}
-  lightSource: {fileID: 0}
+  lightSources: []
   nodePosVariance: 0.2
-  lineRenderer: {fileID: 0}
   layers:
     serializedVersion: 2
     m_Bits: 8
@@ -201,7 +197,7 @@ LineRenderer:
     numCornerVertices: 0
     numCapVertices: 0
     alignment: 0
-    textureMode: 0
+    textureMode: 1
     shadowBias: 0.5
     generateLightingData: 1
   m_UseWorldSpace: 1
