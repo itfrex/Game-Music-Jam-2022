@@ -6,7 +6,7 @@ public class Twig : MonoBehaviour
 {
     const float LINK_LENGTH = 0.3f;
     const float GROWSPEED = 2;
-    const float DIR_CHANGE_CHANCE = 0.005f;
+    const float DIR_CHANGE_CHANCE = 0.003f;
     private float curliness;
     private Vector2 position;
     private Quaternion rotation;
@@ -42,7 +42,7 @@ public class Twig : MonoBehaviour
             {
                 curliness *= -1;
             }
-            rotation *= Quaternion.AngleAxis(curliness, Vector3.forward*Mathf.Pow(remainingLength/length, 2));
+            rotation *= Quaternion.AngleAxis(curliness * (1 - Mathf.Pow(remainingLength / length, 3)), Vector3.forward);
             position += (Vector2)(rotation * Vector2.up * GROWSPEED * Time.deltaTime);
             lineRenderer.SetPosition(lineRenderer.positionCount - 1, position);
             if(Vector2.Distance(position, lineRenderer.GetPosition(lineRenderer.positionCount - 2)) > LINK_LENGTH)
