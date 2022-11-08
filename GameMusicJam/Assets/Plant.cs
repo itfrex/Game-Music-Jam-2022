@@ -6,6 +6,13 @@ public class Plant : MonoBehaviour
 {
     private const float INITIAL_SIZE = 0.5f;
     private const float PITCH_MOD = 20f;
+    private const float BURN_TIME = 0.2f;
+
+    public GameObject burnParticle;
+    public GameObject burnLight;
+    public GameObject smokeParticle;
+    public Gradient charredColor;
+
     public float growSpeed;
     public float rotateSpeed;
     private List<Node> nodes;
@@ -20,12 +27,16 @@ public class Plant : MonoBehaviour
     public LineRenderer lineRenderer;
     public LayerMask layers;
 
+    private BurnZone[] burnZones;
+    private List<GameObject> burnParticleList;
+
     private AudioSource audioSource;
     public bool isGrowing = false;
     void Start()
     {
         lineRenderer = GetComponent<LineRenderer>();
         audioSource = GetComponent<AudioSource>();
+        burnZones = FindObjectsOfType<BurnZone>();
         audioSource.pitch = 0.8f + (growSpeed)*PITCH_MOD;
 
         nodes = new List<Node>();
@@ -41,7 +52,7 @@ public class Plant : MonoBehaviour
     void Update()
     {
         RaycastHit2D hit = Physics2D.Linecast(lightSource.transform.position, endPos, layers);
-        if (hit == false)
+        if (hit == false && !nodes[nodes.Count -1].isBurning())
         {
             growTowards(lightSource.transform.position);
             playerDist = (Vector2)player.transform.position - endPos;
@@ -52,8 +63,11 @@ public class Plant : MonoBehaviour
         {
             isGrowing = false;
         }
-
-
+        if(nodes[0].isBurning() && nodes[nodes.Count - 1].isBurning())
+        {
+            StartCoroutine(DoChar());
+        }
+        CheckBurnZones();
     }
 
     public void growTowards(Vector3 position)
@@ -65,7 +79,7 @@ public class Plant : MonoBehaviour
         endRotation = Quaternion.Slerp(endRotation, targetRotation, Time.deltaTime * rotateSpeed);
         endRotation.y = 0;
         endRotation.x = 0;
-        endPos += (Vector2)(endRotation * Vector2.up * growSpeed);
+        endPos += (Vector2)(endRotation * Vector2.up * growSpeed * Time.deltaTime);
         if (Vector2.Distance(endPos, nodes[nodes.Count - 1].GetPos()) >= maxlinkLength){
             addNode(endPos, endRotation, drawPosVariance);
             drawPosVariance = new Vector2(Random.Range(-nodePosVariance, nodePosVariance), Random.Range(-nodePosVariance, nodePosVariance));
@@ -78,8 +92,49 @@ public class Plant : MonoBehaviour
         lineRenderer.SetPosition(lineRenderer.positionCount-1, position + offset);
         lineRenderer.positionCount += 1;
     }
-    public void Burn(int startLink)
+    private void CheckBurnZones()
     {
+        foreach (BurnZone z in burnZones)
+        {
+            for(int i = 0; i < nodes.Count; i++)
+            {
+                if (Vector2.Distance(z.GetPosition(), nodes[i].GetPos()) <= z.GetRadius())
+                {
+                    StartCoroutine(Burn(i));
+                }
+            }
+            
+        }
+    }
+    public IEnumerator Burn(int nodeIndex)
+    {
+        if (nodes[nodeIndex].Ignite())
+        {
+            Instantiate(burnParticle, nodes[nodeIndex].GetDrawPos(), Quaternion.identity, transform);
+            Instantiate(burnLight, nodes[nodeIndex].GetDrawPos(), Quaternion.identity, transform);
+            yield return new WaitForSeconds(BURN_TIME);
+            if (nodeIndex < nodes.Count - 1)
+            {
+                StartCoroutine(Burn(nodeIndex + 1));
+            }
+            if (nodeIndex > 0)
+            {
+                StartCoroutine(Burn(nodeIndex - 1));
+            }
+        }
+        bool alreadyBurning = nodes[nodeIndex].Ignite();
+        yield return new WaitForSeconds(BURN_TIME);
+    }
+    public IEnumerator DoChar()
+    {
+        lineRenderer.colorGradient = charredColor;
+        foreach (Transform child in transform)
+        {
+            Destroy(child.gameObject);
+        }
+        yield return new WaitForSeconds(BURN_TIME);
+        Destroy(gameObject);
+
 
     }
     private class Node
@@ -87,11 +142,13 @@ public class Plant : MonoBehaviour
         Vector2 position;
         Quaternion rotation;
         Vector2 drawPos;
+        bool ignited;
         public Node(Vector2 position, Quaternion rotation, Vector2 drawPos)
         {
             this.position = position;
             this.rotation = rotation;
             this.drawPos = drawPos;
+            this.ignited = false;
         }
         public Vector2 GetPos()
         {
@@ -104,6 +161,23 @@ public class Plant : MonoBehaviour
         public Quaternion GetRotation()
         {
             return rotation;
+        }
+        public bool Ignite()
+        {
+            if(ignited == false)
+            {
+                ignited = true;
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+            
+        }
+        public bool isBurning()
+        {
+            return ignited;
         }
     }
     public void OnDrawGizmos()
