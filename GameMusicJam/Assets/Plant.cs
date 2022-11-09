@@ -59,7 +59,7 @@ public class Plant : MonoBehaviour
         lineRenderer.positionCount += 1;
         addNode(transform.position, transform.rotation, Vector2.zero);
         lineRenderer.SetPosition(0, transform.position);
-        endPos = (Vector2)transform.position + (Vector2)(transform.position * Vector2.up * INITIAL_SIZE);
+        endPos = (Vector2)transform.position + (Vector2)(transform.up * INITIAL_SIZE);
         lineRenderer.SetPosition(lineRenderer.positionCount - 1, endPos);
         endRotation = transform.rotation;
     }
