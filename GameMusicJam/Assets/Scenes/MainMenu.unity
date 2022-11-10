@@ -380,7 +380,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.392}
+  m_Color: {r: 0, g: 0, b: 0, a: 0.1764706}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -419,9 +419,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   levelLoader: {fileID: 219191137}
   levelNameList:
-  - Level 1
-  - Level2
-  - Level3
+  - Life
+  - Glass
+  - Chase
+  - Two
   levelButton: {fileID: 7474056594293111413, guid: 17dfc86e8d952344c939acbe2863cfee, type: 3}
   levelListPanel: {fileID: 711683032}
 --- !u!4 &506549107 stripped
@@ -643,7 +644,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.5, g: 0.5, b: 0.5, a: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 0}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -1108,9 +1109,17 @@ PrefabInstance:
       value: 45
       objectReference: {fileID: 0}
     - target: {fileID: 7092491667696207535, guid: 2f8b27007f068114db39c2105b10285b, type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: b10fa5c5d26f8784ea26b8cddd7dae04, type: 2}
+    - target: {fileID: 7092491667696207535, guid: 2f8b27007f068114db39c2105b10285b, type: 3}
       propertyPath: m_fontSizeBase
       value: 45
       objectReference: {fileID: 0}
+    - target: {fileID: 7092491667696207535, guid: 2f8b27007f068114db39c2105b10285b, type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: -497864165832757872, guid: b10fa5c5d26f8784ea26b8cddd7dae04, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2f8b27007f068114db39c2105b10285b, type: 3}
 --- !u!224 &1358676785 stripped
@@ -1564,11 +1573,19 @@ PrefabInstance:
       value: 50
       objectReference: {fileID: 0}
     - target: {fileID: 7092491667696207535, guid: 2f8b27007f068114db39c2105b10285b, type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: b10fa5c5d26f8784ea26b8cddd7dae04, type: 2}
+    - target: {fileID: 7092491667696207535, guid: 2f8b27007f068114db39c2105b10285b, type: 3}
       propertyPath: m_fontSizeBase
       value: 50
       objectReference: {fileID: 0}
     - target: {fileID: 7092491667696207535, guid: 2f8b27007f068114db39c2105b10285b, type: 3}
       propertyPath: m_HorizontalAlignment
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7092491667696207535, guid: 2f8b27007f068114db39c2105b10285b, type: 3}
+      propertyPath: m_hasFontAssetChanged
       value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
@@ -1775,8 +1792,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Hidden Vine
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: b4ee37cf43bf3f245b48914bd2f83d99, type: 2}
-  m_sharedMaterial: {fileID: -5431521705053182518, guid: b4ee37cf43bf3f245b48914bd2f83d99, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: b10fa5c5d26f8784ea26b8cddd7dae04, type: 2}
+  m_sharedMaterial: {fileID: -497864165832757872, guid: b10fa5c5d26f8784ea26b8cddd7dae04, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1979,5 +1996,13 @@ PrefabInstance:
       propertyPath: showObj
       value: 
       objectReference: {fileID: 504411543}
+    - target: {fileID: 7092491667696207535, guid: 2f8b27007f068114db39c2105b10285b, type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: b10fa5c5d26f8784ea26b8cddd7dae04, type: 2}
+    - target: {fileID: 7092491667696207535, guid: 2f8b27007f068114db39c2105b10285b, type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: -497864165832757872, guid: b10fa5c5d26f8784ea26b8cddd7dae04, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2f8b27007f068114db39c2105b10285b, type: 3}
