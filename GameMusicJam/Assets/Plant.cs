@@ -55,6 +55,7 @@ public class Plant : MonoBehaviour
     private Material material;
 
     private WindowScript[] windows;
+    private RoundWindowScript[] roundWindows; //ideally I just make this inherit from the same script but I am too lazy and I am not adding anymore windows
     private bool byWindow = false;
 
     private bool stuck;
@@ -71,6 +72,7 @@ public class Plant : MonoBehaviour
     {
         lineRenderer = GetComponent<LineRenderer>();
         windows = FindObjectsOfType<WindowScript>();
+        roundWindows = FindObjectsOfType<RoundWindowScript>();
 
         audioSource = GetComponents<AudioSource>();
 
@@ -138,6 +140,15 @@ public class Plant : MonoBehaviour
                 if (w.CheckPoint(endPos))
                 {
                     
+                    byWindow = true;
+                    audioSource[0].Stop();
+                }
+            } //make window a base class and iterate only through one array if you want
+            foreach (RoundWindowScript w in roundWindows)
+            {
+                if (w.CheckPoint(endPos))
+                {
+
                     byWindow = true;
                     audioSource[0].Stop();
                 }
