@@ -1640,7 +1640,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3110036604716075467, guid: a49fc8c1e0bea6247af8c1a7e8740d2e, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3110036604716075469, guid: a49fc8c1e0bea6247af8c1a7e8740d2e, type: 3}
       propertyPath: transition
@@ -1792,8 +1792,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Hidden Vine
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: b10fa5c5d26f8784ea26b8cddd7dae04, type: 2}
-  m_sharedMaterial: {fileID: -497864165832757872, guid: b10fa5c5d26f8784ea26b8cddd7dae04, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: b4ee37cf43bf3f245b48914bd2f83d99, type: 2}
+  m_sharedMaterial: {fileID: -5431521705053182518, guid: b4ee37cf43bf3f245b48914bd2f83d99, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
