@@ -20,12 +20,21 @@ public class Plant : MonoBehaviour
     public GameObject twigObject;
     public Gradient charredColor;
 
+    public Sprite[] leafShapes;
+    public Gradient leafShades;
+    public float minLeafSize;
+    public float maxLeafSize;
+    public GameObject[] endLeaves;
+    public Quaternion[] leafInitialRotations;
+    public Vector2[] leafPosOffsets;
+
     public float growSpeed;
     public float rotateSpeed;
     private List<Node> nodes;
     private Vector2 endPos;
     private Quaternion endRotation;
     private Vector2 drawPosVariance = Vector2.zero;
+    private Vector2 prevDrawPos = Vector2.zero;
     [SerializeField]
     private float maxlinkLength;
     [SerializeField]
@@ -37,21 +46,36 @@ public class Plant : MonoBehaviour
     public float nodePosVariance;
     private LineRenderer lineRenderer;
     public LayerMask layers;
+    public LayerMask collisionLayers;
 
     private BurnZone[] burnZones;
 
     private Material material;
 
-    private AudioSource audioSource;
+    private WindowScript[] windows;
+    private bool byWindow = false;
+
+    private bool stuck;
+
+    private AudioSource[] audioSource;
+    [SerializeField]
+    private float burnVolume;
+    [SerializeField]
+    private float growVolume;
     public bool isGrowing = false;
+    private bool isBurning = false;
+    private bool isCharred;
     void Start()
     {
         lineRenderer = GetComponent<LineRenderer>();
-        audioSource = GetComponent<AudioSource>();
+        windows = FindObjectsOfType<WindowScript>();
+
+        audioSource = GetComponents<AudioSource>();
+
         burnZones = FindObjectsOfType<BurnZone>();
         player = GameObject.FindGameObjectWithTag("Player");
         lightSources = GameObject.FindGameObjectsWithTag("Light Source").Concat(new GameObject[1] { player }).ToArray();
-        audioSource.pitch = 0.8f + (growSpeed*PITCH_MOD);
+
         material = lineRenderer.material;
         material.SetFloat("_step", 1);
 
@@ -62,26 +86,56 @@ public class Plant : MonoBehaviour
         endPos = (Vector2)transform.position + (Vector2)(transform.up * INITIAL_SIZE);
         lineRenderer.SetPosition(lineRenderer.positionCount - 1, endPos);
         endRotation = transform.rotation;
+
+        leafInitialRotations = new Quaternion[endLeaves.Length];
+        leafPosOffsets = new Vector2[endLeaves.Length];
+        for (int i = 0; i < endLeaves.Length; i++)
+        {
+            SpriteRenderer leafRenderer = endLeaves[i].GetComponent<SpriteRenderer>();
+            leafRenderer.sprite = leafShapes[(int)Random.Range(0, leafShapes.Length)];
+            leafRenderer.color = leafShades.Evaluate(Random.Range(0f, 1f));
+            endLeaves[i].transform.localScale = Vector3.one * Random.Range(minLeafSize, maxLeafSize);
+            leafInitialRotations[i] = endLeaves[i].transform.localRotation;
+            leafPosOffsets[i] = endLeaves[i].transform.localPosition;
+            leafRenderer.material = material;
+            endLeaves[i].transform.position = endPos + leafPosOffsets[i];
+        }
     }
 
     // Update is called once per frame
     void Update()
     {
-        foreach(GameObject light in lightSources)
+        if (!byWindow && !stuck)
         {
-            RaycastHit2D hit = Physics2D.Linecast(light.transform.position, endPos, layers);
-            if (hit == false && !nodes[nodes.Count - 1].isBurning())
+            foreach (GameObject light in lightSources)
+                {
+                    RaycastHit2D hit = Physics2D.Linecast(light.transform.position, endPos, layers);
+                    RaycastHit2D hitSolids = Physics2D.Raycast(endPos, endRotation * Vector2.up, growSpeed * Time.deltaTime, collisionLayers);
+                    if (!hit && !hitSolids && !nodes[nodes.Count - 1].isBurning())
+                        {
+                            growTowards(light.transform.position);
+                            playerDist = (Vector2)player.transform.position - endPos;
+                            audioSource[0].panStereo = Mathf.Clamp(-playerDist.x / 2, -1, 1);
+                            audioSource[0].volume = Mathf.Clamp((1 / playerDist.magnitude), 0, 1);
+                            
+                            if (!audioSource[0].isPlaying) { audioSource[0].Play(); }
+                        }
+                        else if (audioSource[0].isPlaying) { audioSource[0].Pause(); }
+                    }
+            foreach (WindowScript w in windows)
             {
-                growTowards(light.transform.position);
-                playerDist = (Vector2)player.transform.position - endPos;
-                audioSource.panStereo = Mathf.Clamp(-playerDist.x / 2, -1, 1);
-                audioSource.volume = Mathf.Clamp((1/playerDist.magnitude), 0, 1);
-                if (!audioSource.isPlaying) { audioSource.Play(); }
+                if (w.CheckPoint(endPos))
+                {
+                    
+                    byWindow = true;
+                    audioSource[0].Stop();
+                }
             }
-            else if(audioSource.isPlaying) { audioSource.Pause(); }
         }
-        if(nodes[0].isBurning() && nodes[^1].isBurning())
+        if(!isCharred && nodes[0].isBurning() && nodes[^1].isBurning())
         {
+            StartCoroutine(FadeAudio(audioSource[1], true, 0));
+            isCharred = true;
             BurnAway();
         }
         CheckBurnZones();
@@ -90,20 +144,27 @@ public class Plant : MonoBehaviour
     public void growTowards(Vector2 position)
     {
         float percentOfLink = Mathf.InverseLerp(0, maxlinkLength, Vector2.Distance(endPos, nodes[nodes.Count - 1].GetPos()));
-        lineRenderer.SetPosition(lineRenderer.positionCount - 1, endPos + (drawPosVariance * percentOfLink));
         Vector2 targetVector = position - endPos;
         Quaternion targetRotation = Quaternion.LookRotation(-targetVector, Vector3.forward);
         endRotation = Quaternion.RotateTowards(endRotation, targetRotation, Time.deltaTime * rotateSpeed);
         endRotation.y = 0;
         endRotation.x = 0;
         endPos += (Vector2)(endRotation * Vector2.up * growSpeed * Time.deltaTime);
-        if (Vector2.Distance(endPos, nodes[^1].GetPos()) >= maxlinkLength){
+        
+        //endPos += hit.normal * (hit.point - endPos)*1.1f;
+        for (int i = 0; i < endLeaves.Length; i++)
+        {
+            endLeaves[i].transform.position = endPos + (drawPosVariance * percentOfLink) + leafPosOffsets[i];
+            endLeaves[i].transform.rotation = leafInitialRotations[i] * endRotation;
+        }
+            if (Vector2.Distance(endPos, nodes[^1].GetPos()) >= maxlinkLength){
             addNode(endPos, endRotation, drawPosVariance);
             if(Random.Range(0, 1f) < twigChance) { addTwig(endPos+drawPosVariance, endRotation); }
+            prevDrawPos = drawPosVariance;
             drawPosVariance = new Vector2(Random.Range(-nodePosVariance, nodePosVariance), Random.Range(-nodePosVariance, nodePosVariance));
             percentOfLink = 0;
-            lineRenderer.SetPosition(lineRenderer.positionCount - 1, endPos + (drawPosVariance * percentOfLink));
         }
+        lineRenderer.SetPosition(lineRenderer.positionCount - 1, endPos + Vector2.Lerp(prevDrawPos, drawPosVariance, percentOfLink));
     }
     private void addNode(Vector2 position, Quaternion rotation, Vector2 offset){
         nodes.Add(new Node(position, rotation, position + offset));
@@ -113,7 +174,8 @@ public class Plant : MonoBehaviour
     private void addTwig(Vector2 position, Quaternion rotation)
     {
         GameObject twig = Instantiate(twigObject, position, rotation, transform);
-        twig.GetComponent<Twig>().BeginGrowth(twigCurliness, position, rotation, material, twigLength, lineRenderer.colorGradient);
+        int dir = (Random.Range(0, 1) * 2) - 1;
+        twig.GetComponent<Twig>().BeginGrowth(twigCurliness*dir, position, rotation, material, twigLength, lineRenderer.colorGradient, GenerateLeaf());
     }
     private void CheckBurnZones()
     {
@@ -123,6 +185,14 @@ public class Plant : MonoBehaviour
             {
                 if (Vector2.Distance(z.GetPosition(), nodes[i].GetPos()) <= z.GetRadius())
                 {
+                    if (!isBurning) 
+                    {
+                        audioSource[1].volume = 0;
+                        audioSource[1].Play();
+                        StartCoroutine(FadeAudio(audioSource[1], false, burnVolume));
+                        isBurning = true;
+                    }
+                    
                     StartCoroutine(Burn(i));
                 }
             }
@@ -148,10 +218,31 @@ public class Plant : MonoBehaviour
         bool alreadyBurning = nodes[nodeIndex].Ignite();
         yield return new WaitForSeconds(BURN_TIME);
     }
+    public IEnumerator FadeAudio(AudioSource a, bool fadeOut, float volume)
+    {
+        while ((fadeOut && a.volume > volume) || (!fadeOut && a.volume < volume))
+        {
+            if (fadeOut)
+            {
+                a.volume -= 0.05f;
+            }
+            else
+            {
+                a.volume += 0.05f;
+            }
+            yield return new WaitForSeconds(0.1f);
+        }
+        if (fadeOut) { a.Pause(); }
+    }
     public void BurnAway()
     {
-        lineRenderer.colorGradient = charredColor;        
-        foreach (ParticleSystem p in GetComponentsInChildren<ParticleSystem>())
+        lineRenderer.colorGradient = charredColor;
+        for (int i = 0; i < endLeaves.Length; i++)
+        {
+            SpriteRenderer leafRenderer = endLeaves[i].GetComponent<SpriteRenderer>();
+            leafRenderer.color = charredColor.Evaluate(0);
+        }
+            foreach (ParticleSystem p in GetComponentsInChildren<ParticleSystem>())
         {
             p.Stop();
         }
@@ -173,6 +264,16 @@ public class Plant : MonoBehaviour
             yield return 0;
         }
         Destroy(gameObject);
+    }
+    private GameObject GenerateLeaf()
+    {
+        GameObject result = new GameObject();
+        SpriteRenderer renderer = result.AddComponent<SpriteRenderer>();
+        renderer.sprite = leafShapes[Random.Range(0, leafShapes.Length)];
+        renderer.color = leafShades.Evaluate(Random.Range(0f, 1f));
+        renderer.material = material;
+        result.transform.localScale = Vector3.one * Random.Range(minLeafSize, maxLeafSize) / 2;
+        return result;
     }
     private class Node
     {
@@ -216,6 +317,10 @@ public class Plant : MonoBehaviour
         {
             return ignited;
         }
+    }
+    public bool IsByWindow()
+    {
+        return byWindow;
     }
     public void OnDrawGizmos()
     {

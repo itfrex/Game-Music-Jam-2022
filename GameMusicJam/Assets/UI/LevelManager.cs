@@ -8,6 +8,7 @@ using TMPro;
 public class LevelManager : MonoBehaviour
 {
     // Start is called before the first frame update
+    public LevelLoader levelLoader;
     public List<string> levelNameList;
     public GameObject levelButton;
     public GameObject levelListPanel;
@@ -37,7 +38,7 @@ public class LevelManager : MonoBehaviour
     {
         try
         {
-            SceneManager.LoadScene(levelName);
+            StartCoroutine(levelLoader.LoadLevelByName(levelName));
         }
         catch 
         {

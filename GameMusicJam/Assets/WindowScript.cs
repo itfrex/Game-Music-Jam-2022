@@ -15,8 +15,15 @@ public class WindowScript : MonoBehaviour
     public GameObject rightHinge;
     private bool opened;
     private float swayTimer = 0;
+    private BoxCollider2D boxCollider;
+    private Vector2 winAreaLow;
+    private Vector2 winAreaHigh;
     void Start()
     {
+        boxCollider = GetComponent<BoxCollider2D>();
+        winAreaLow = new Vector2(transform.position.x - transform.localScale.x / 2, transform.position.y - transform.localScale.y / 2);
+        winAreaHigh = new Vector2(transform.position.x + transform.localScale.x / 2, transform.position.y + transform.localScale.y / 2);
+
         if (beginOpened)
         {
             StartCoroutine(SwingOpen());
@@ -47,5 +54,14 @@ public class WindowScript : MonoBehaviour
             timer += Time.deltaTime;
         }
         opened = true;
+    }
+    public bool CheckPoint(Vector2 point)
+    {
+        bool result = false;
+        if (winAreaLow.x < point.x && point.x < winAreaHigh.x && winAreaLow.y < point.y && point.y < winAreaHigh.y)
+        {
+            result = true;
+        }
+        return result;
     }
 }
