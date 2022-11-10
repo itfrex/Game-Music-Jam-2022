@@ -210,7 +210,7 @@
         "m_Position": {
             "serializedVersion": "2",
             "x": -149.0,
-            "y": 519.0,
+            "y": 515.0,
             "width": 132.0,
             "height": 34.0
         }
@@ -350,9 +350,9 @@
         "m_Expanded": true,
         "m_Position": {
             "serializedVersion": "2",
-            "x": -414.0000305175781,
-            "y": 2.9999966621398927,
-            "width": 134.0,
+            "x": -414.0,
+            "y": 3.0,
+            "width": 119.0,
             "height": 34.0
         }
     },
@@ -469,12 +469,12 @@
     "m_CustomSlotLabel": "",
     "m_Precision": 0,
     "overrideHLSLDeclaration": false,
-    "hlslDeclarationOverride": 0,
+    "hlslDeclarationOverride": 2,
     "m_Hidden": false,
     "m_Value": {
-        "r": 6.264151096343994,
-        "g": 4.383693218231201,
-        "b": 0.5023140907287598,
+        "r": 1585.0260009765625,
+        "g": 1094.21435546875,
+        "b": 261.6788024902344,
         "a": 0.0
     },
     "isMainColor": false,

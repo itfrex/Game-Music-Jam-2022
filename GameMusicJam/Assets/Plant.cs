@@ -28,6 +28,8 @@ public class Plant : MonoBehaviour
     public Quaternion[] leafInitialRotations;
     public Vector2[] leafPosOffsets;
 
+    private Vector2 avgLightDir;
+    private int numLightsVisible;
     public float growSpeed;
     public float rotateSpeed;
     private List<Node> nodes;
@@ -105,15 +107,25 @@ public class Plant : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        avgLightDir = Vector2.zero;
+        numLightsVisible = 0;
         if (!byWindow && !stuck)
         {
             foreach (GameObject light in lightSources)
+            {
+                
+                RaycastHit2D hit = Physics2D.Linecast(light.transform.position, endPos, layers);
+                if (hit == false)
                 {
-                    RaycastHit2D hit = Physics2D.Linecast(light.transform.position, endPos, layers);
+                    avgLightDir += (Vector2)light.transform.position;
+                    numLightsVisible++;
+                }
+            }
+                    
                     RaycastHit2D hitSolids = Physics2D.Raycast(endPos, endRotation * Vector2.up, growSpeed * Time.deltaTime, collisionLayers);
-                    if (!hit && !hitSolids && !nodes[nodes.Count - 1].isBurning())
+                    if (numLightsVisible > 0 && !hitSolids && !nodes[nodes.Count - 1].isBurning())
                         {
-                            growTowards(light.transform.position);
+                            growTowards(avgLightDir/numLightsVisible);
                             playerDist = (Vector2)player.transform.position - endPos;
                             audioSource[0].panStereo = Mathf.Clamp(-playerDist.x / 2, -1, 1);
                             audioSource[0].volume = Mathf.Clamp((1 / playerDist.magnitude), 0, 1);
@@ -121,7 +133,6 @@ public class Plant : MonoBehaviour
                             if (!audioSource[0].isPlaying) { audioSource[0].Play(); }
                         }
                         else if (audioSource[0].isPlaying) { audioSource[0].Pause(); }
-                    }
             foreach (WindowScript w in windows)
             {
                 if (w.CheckPoint(endPos))
