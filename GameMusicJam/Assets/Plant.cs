@@ -9,6 +9,7 @@ public class Plant : MonoBehaviour
     private const float INITIAL_SIZE = 0.5f;
     private const float PITCH_MOD = 0.05f;
     private const float BURN_TIME = 0.1f;
+    private const int CHOMP_COUNT = 4;
     private const float CHAR_TIME = 2f;
 
     public float twigChance;
@@ -19,6 +20,7 @@ public class Plant : MonoBehaviour
     public GameObject burnLight;
     public GameObject twigObject;
     public Gradient charredColor;
+    public GameObject infestEffect;
 
     public Sprite[] leafShapes;
     public Gradient leafShades;
@@ -51,6 +53,7 @@ public class Plant : MonoBehaviour
     public LayerMask collisionLayers;
 
     private BurnZone[] burnZones;
+    private InsectController[] swarms;
 
     private Material material;
 
@@ -65,11 +68,17 @@ public class Plant : MonoBehaviour
     private float burnVolume;
     [SerializeField]
     private float growVolume;
-    public bool isGrowing = false;
+    private int chompCount;
+    [SerializeField]
+    private float chompTime;
+    private bool isGrowing = false;
     private bool isBurning = false;
+    private bool isEating = false;
+    private bool isEaten = false;
     private bool isCharred;
     void Start()
     {
+        chompCount = CHOMP_COUNT - 1;
         lineRenderer = GetComponent<LineRenderer>();
         windows = FindObjectsOfType<WindowScript>();
         roundWindows = FindObjectsOfType<RoundWindowScript>();
@@ -77,6 +86,7 @@ public class Plant : MonoBehaviour
         audioSource = GetComponents<AudioSource>();
 
         burnZones = FindObjectsOfType<BurnZone>();
+        swarms = FindObjectsOfType<InsectController>();
         player = GameObject.FindGameObjectWithTag("Player");
         lightSources = GameObject.FindGameObjectsWithTag("Light Source").Concat(new GameObject[1] { player }).ToArray();
 
@@ -125,7 +135,7 @@ public class Plant : MonoBehaviour
             }
                     
                     RaycastHit2D hitSolids = Physics2D.Raycast(endPos, endRotation * Vector2.up, growSpeed * Time.deltaTime, collisionLayers);
-                    if (numLightsVisible > 0 && !hitSolids && !nodes[nodes.Count - 1].isBurning())
+                    if (numLightsVisible > 0 && !hitSolids && !nodes[nodes.Count - 1].isBurning() && !nodes[nodes.Count - 1].isInfested())
                         {
                             growTowards(avgLightDir/numLightsVisible);
                             playerDist = (Vector2)player.transform.position - endPos;
@@ -160,7 +170,12 @@ public class Plant : MonoBehaviour
             isCharred = true;
             BurnAway();
         }
-        CheckBurnZones();
+        if(!isEaten && nodes[0].isInfested() && nodes[^1].isInfested())
+        {
+            isEaten = true;
+            StartCoroutine(ChompAway());
+        }
+        CheckBurnAndSwarmZones();
     }
 
     public void growTowards(Vector2 position)
@@ -199,11 +214,11 @@ public class Plant : MonoBehaviour
         int dir = (Random.Range(0, 1) * 2) - 1;
         twig.GetComponent<Twig>().BeginGrowth(twigCurliness*dir, position, rotation, material, twigLength, lineRenderer.colorGradient, GenerateLeaf());
     }
-    private void CheckBurnZones()
+    private void CheckBurnAndSwarmZones()
     {
-        foreach (BurnZone z in burnZones)
+        for(int i = 0; i < nodes.Count; i++)
         {
-            for(int i = 0; i < nodes.Count; i++)
+            foreach (BurnZone z in burnZones)
             {
                 if (Vector2.Distance(z.GetPosition(), nodes[i].GetPos()) <= z.GetRadius())
                 {
@@ -218,7 +233,36 @@ public class Plant : MonoBehaviour
                     StartCoroutine(Burn(i));
                 }
             }
-            
+            foreach (InsectController s in swarms)
+            {
+                if (s.CheckInRange(nodes[i].GetPos()))
+                {
+                    Debug.Log(1);
+                    if (!isEating)
+                    {
+                        isEating = true;
+                        StartCoroutine(Infest(i));
+                    }
+                }
+            }
+
+        }
+    }
+    public IEnumerator Infest(int nodeIndex)
+    {
+        if (nodes[nodeIndex].Infest())
+        {
+            Debug.Log(2);
+            Instantiate(infestEffect, nodes[nodeIndex].GetDrawPos(), Quaternion.identity, transform);
+            yield return new WaitForSeconds(BURN_TIME);
+            if (nodeIndex < nodes.Count - 1)
+            {
+                StartCoroutine(Infest(nodeIndex + 1));
+            }
+            if (nodeIndex > 0)
+            {
+                StartCoroutine(Infest(nodeIndex - 1));
+            }
         }
     }
     public IEnumerator Burn(int nodeIndex)
@@ -278,6 +322,17 @@ public class Plant : MonoBehaviour
         }
         StartCoroutine(DoChar());
     }
+    private IEnumerator ChompAway()
+    {
+        while (chompCount >= 0)
+        {
+            material.SetFloat("_step", Mathf.Pow((float)chompCount / CHOMP_COUNT,2));
+            audioSource[Random.Range(2,3)].Play();
+            chompCount--;
+            yield return new WaitForSeconds(chompTime);
+        }
+        Destroy(gameObject);
+    }
     public IEnumerator DoChar()
     {
         for(float timer = CHAR_TIME; timer > 0; timer -= Time.deltaTime)
@@ -299,16 +354,18 @@ public class Plant : MonoBehaviour
     }
     private class Node
     {
-        Vector2 position;
-        Quaternion rotation;
-        Vector2 drawPos;
-        bool ignited;
+        private Vector2 position;
+        private Quaternion rotation;
+        private Vector2 drawPos;
+        private bool ignited;
+        private bool infested;
         public Node(Vector2 position, Quaternion rotation, Vector2 drawPos)
         {
             this.position = position;
             this.rotation = rotation;
             this.drawPos = drawPos;
             this.ignited = false;
+            this.infested = false;
         }
         public Vector2 GetPos()
         {
@@ -335,9 +392,25 @@ public class Plant : MonoBehaviour
             }
             
         }
+        public bool Infest()
+        {
+            if (infested == false)
+            {
+                infested = true;
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
         public bool isBurning()
         {
             return ignited;
+        }
+        public bool isInfested()
+        {
+            return infested;
         }
     }
     public bool IsByWindow()

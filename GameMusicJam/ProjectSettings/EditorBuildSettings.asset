@@ -23,4 +23,10 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Two.unity
     guid: 3ebe9b0358cd05f4f9bbdc0602527d1e
+  - enabled: 1
+    path: Assets/Scenes/Privacy.unity
+    guid: afbe2dd8e2382194fb4230298aadeb88
+  - enabled: 1
+    path: Assets/Scenes/Bullseye.unity
+    guid: 0e911b5ba2043b94ea6003552a5cab1f
   m_configObjects: {}

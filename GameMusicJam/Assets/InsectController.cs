@@ -8,6 +8,8 @@ public class InsectController : MonoBehaviour
     private GameObject player;
     private GameObject[] lightSources;
     private Rigidbody2D rb2d;
+    [SerializeField]
+    private float eatRadius;
 
     public float speed;
 
@@ -31,5 +33,13 @@ public class InsectController : MonoBehaviour
             }
 
         }
+    }
+    public bool CheckInRange(Vector2 point)
+    {
+        if((point - (Vector2)transform.position).magnitude < eatRadius)
+        {
+            return true;
+        }
+        return false;
     }
 }

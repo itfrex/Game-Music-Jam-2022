@@ -30,6 +30,13 @@ public class LevelLoader : MonoBehaviour
         transition = GetComponent<Animator>();
         transition.speed = previousSpeed;
     }
+    private void Update()
+    {
+        if (Input.GetKeyDown("R"))
+        {
+            StartCoroutine(RestartLevel());
+        }
+    }
 
     public void LoadNextLevel()
     {
