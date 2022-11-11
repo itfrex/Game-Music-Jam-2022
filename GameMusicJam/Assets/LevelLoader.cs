@@ -32,7 +32,7 @@ public class LevelLoader : MonoBehaviour
     }
     private void Update()
     {
-        if (Input.GetKeyDown("R"))
+        if (Input.GetKeyDown("r"))
         {
             StartCoroutine(RestartLevel());
         }
