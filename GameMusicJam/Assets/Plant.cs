@@ -8,7 +8,7 @@ public class Plant : MonoBehaviour
 {
     private const float INITIAL_SIZE = 0.5f;
     private const float PITCH_MOD = 0.05f;
-    private const float BURN_TIME = 0.1f;
+    private const float BURN_TIME = 0.05f;
     private const int CHOMP_COUNT = 3;
     private const float CHAR_TIME = 2f;
 
