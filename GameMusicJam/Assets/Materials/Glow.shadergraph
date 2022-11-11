@@ -329,9 +329,9 @@
         "m_Expanded": true,
         "m_Position": {
             "serializedVersion": "2",
-            "x": -148.99998474121095,
-            "y": 516.0,
-            "width": 132.00001525878907,
+            "x": -149.0,
+            "y": 519.0,
+            "width": 132.0,
             "height": 34.0
         }
     },
@@ -655,7 +655,7 @@
     "m_RefNameGeneratedByDisplayName": "MainTex",
     "m_DefaultReferenceName": "_MainTex",
     "m_OverrideReferenceName": "",
-    "m_GeneratePropertyBlock": true,
+    "m_GeneratePropertyBlock": false,
     "m_UseCustomSlotLabel": false,
     "m_CustomSlotLabel": "",
     "m_Precision": 0,
