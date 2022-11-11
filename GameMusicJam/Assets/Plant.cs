@@ -9,7 +9,7 @@ public class Plant : MonoBehaviour
     private const float INITIAL_SIZE = 0.5f;
     private const float PITCH_MOD = 0.05f;
     private const float BURN_TIME = 0.1f;
-    private const int CHOMP_COUNT = 4;
+    private const int CHOMP_COUNT = 3;
     private const float CHAR_TIME = 2f;
 
     public float twigChance;
@@ -140,7 +140,7 @@ public class Plant : MonoBehaviour
                             growTowards(avgLightDir/numLightsVisible);
                             playerDist = (Vector2)player.transform.position - endPos;
                             audioSource[0].panStereo = Mathf.Clamp(-playerDist.x / 2, -1, 1);
-                            audioSource[0].volume = Mathf.Clamp((1 / playerDist.magnitude), 0, 1);
+                            audioSource[0].volume = Mathf.Clamp((1 / playerDist.magnitude), 0.05f, 1);
                             
                             if (!audioSource[0].isPlaying) { audioSource[0].Play(); }
                         }
@@ -326,7 +326,7 @@ public class Plant : MonoBehaviour
     {
         while (chompCount >= 0)
         {
-            material.SetFloat("_step", Mathf.Pow((float)chompCount / CHOMP_COUNT,2));
+            material.SetFloat("_step", Mathf.Pow((float)chompCount / CHOMP_COUNT,1.5f));
             audioSource[Random.Range(2,3)].Play();
             chompCount--;
             yield return new WaitForSeconds(chompTime);

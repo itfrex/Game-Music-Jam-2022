@@ -8,6 +8,7 @@ public class WindowScript : MonoBehaviour
     private const float OPENED_ANGLE = 145;
     private const float SWAY_AMT = 300;
     private const float SWAY_LOOP_TIME = 3;
+    private AudioSource audioSource;
     public AnimationCurve openCurve;
     public AnimationCurve swayCurve;
     public bool beginOpened;
@@ -23,6 +24,7 @@ public class WindowScript : MonoBehaviour
         boxCollider = GetComponent<BoxCollider2D>();
         winAreaLow = new Vector2(transform.position.x - transform.localScale.x / 2, transform.position.y - transform.localScale.y / 2);
         winAreaHigh = new Vector2(transform.position.x + transform.localScale.x / 2, transform.position.y + transform.localScale.y / 2);
+        audioSource = GetComponent<AudioSource>();
 
         if (beginOpened)
         {
@@ -60,6 +62,7 @@ public class WindowScript : MonoBehaviour
         bool result = false;
         if (winAreaLow.x < point.x && point.x < winAreaHigh.x && winAreaLow.y < point.y && point.y < winAreaHigh.y)
         {
+            audioSource.Play();
             result = true;
         }
         return result;

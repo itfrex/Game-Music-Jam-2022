@@ -8,6 +8,7 @@ public class RoundWindowScript : MonoBehaviour
     private const float OPENED_ANGLE = 130;
     private const float SWAY_AMT = 20;
     private const float SWAY_LOOP_TIME = 3;
+    private AudioSource audioSource;
     public AnimationCurve openCurve;
     public AnimationCurve swayCurve;
     public bool beginOpened;
@@ -21,6 +22,7 @@ public class RoundWindowScript : MonoBehaviour
         {
             StartCoroutine(SwingOpen());
         }
+        audioSource = GetComponent<AudioSource>();
         plantByWindow = false;
     }
 
@@ -50,11 +52,10 @@ public class RoundWindowScript : MonoBehaviour
     public bool CheckPoint(Vector2 point)
     {
         bool result = false;
-        Debug.Log("almost Made it");
 
         if (!plantByWindow && (point - (Vector2)transform.position).magnitude < transform.localScale.x/2)
         {
-            Debug.Log("Made it");
+            audioSource.Play();
             plantByWindow = true;
             result = true;
         }
