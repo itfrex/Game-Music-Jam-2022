@@ -5,8 +5,8 @@ using UnityEngine;
 public class RoundWindowScript : MonoBehaviour
 {
     private const float OPEN_TIME = 1.5f;
-    private const float OPENED_ANGLE = 145;
-    private const float SWAY_AMT = 40;
+    private const float OPENED_ANGLE = 130;
+    private const float SWAY_AMT = 20;
     private const float SWAY_LOOP_TIME = 3;
     public AnimationCurve openCurve;
     public AnimationCurve swayCurve;

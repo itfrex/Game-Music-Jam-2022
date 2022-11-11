@@ -423,6 +423,8 @@ MonoBehaviour:
   - Glass
   - Chase
   - Two
+  - Privacy
+  - Bullseye
   levelButton: {fileID: 7474056594293111413, guid: 17dfc86e8d952344c939acbe2863cfee, type: 3}
   levelListPanel: {fileID: 711683032}
 --- !u!4 &506549107 stripped
@@ -792,6 +794,10 @@ PrefabInstance:
     - target: {fileID: 7163265418175624948, guid: 5eafac28aef048f49a4c843e3a896a8d, type: 3}
       propertyPath: m_Name
       value: Main Camera
+      objectReference: {fileID: 0}
+    - target: {fileID: 7163265418175624951, guid: 5eafac28aef048f49a4c843e3a896a8d, type: 3}
+      propertyPath: orthographic
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7163265418175624951, guid: 5eafac28aef048f49a4c843e3a896a8d, type: 3}
       propertyPath: orthographic size
@@ -1640,7 +1646,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3110036604716075467, guid: a49fc8c1e0bea6247af8c1a7e8740d2e, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3110036604716075469, guid: a49fc8c1e0bea6247af8c1a7e8740d2e, type: 3}
       propertyPath: transition
