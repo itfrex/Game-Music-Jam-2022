@@ -424,9 +424,13 @@ MonoBehaviour:
   - Chase
   - Two
   - Privacy
-  - Bullseye
-  - Cross
   - Spiral
+  - Swarm
+  - Other
+  - Sacrifice
+  - Cross
+  - Gather
+  - Bullseye
   levelButton: {fileID: 7474056594293111413, guid: 17dfc86e8d952344c939acbe2863cfee, type: 3}
   levelListPanel: {fileID: 711683032}
 --- !u!4 &506549107 stripped
@@ -608,8 +612,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -26}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: -16.75}
+  m_SizeDelta: {x: 0, y: 18.5}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &711683034
 MonoBehaviour:
@@ -632,7 +636,7 @@ MonoBehaviour:
   m_StartCorner: 0
   m_StartAxis: 0
   m_CellSize: {x: 170, y: 100}
-  m_Spacing: {x: 30, y: 30}
+  m_Spacing: {x: 85, y: 4}
   m_Constraint: 0
   m_ConstraintCount: 2
 --- !u!114 &711683035
