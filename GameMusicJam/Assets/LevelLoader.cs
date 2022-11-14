@@ -36,11 +36,15 @@ public class LevelLoader : MonoBehaviour
         {
             StartCoroutine(RestartLevel());
         }
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            StartCoroutine(LoadLevelByName("MainMenu"));
+        }
     }
 
     public void LoadNextLevel()
     {
-        StartCoroutine(LoadLevel((SceneManager.GetActiveScene().buildIndex + 1) % SceneManager.sceneCount));
+        StartCoroutine(LoadLevel((SceneManager.GetActiveScene().buildIndex + 1)));
     }
     public IEnumerator LoadLevel(int levelIndex)
     {
