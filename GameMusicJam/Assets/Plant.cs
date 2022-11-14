@@ -5,19 +5,8 @@ using UnityEngine;
 public class Plant : MonoBehaviour
 {
     private const float INITIAL_SIZE = 0.5f;
-<<<<<<< HEAD
     private const float PITCH_MOD = 20f;
     private const float BURN_TIME = 0.2f;
-=======
-    private const float PITCH_MOD = 0.05f;
-    private const float BURN_TIME = 0.1f;
-    private const int CHOMP_COUNT = 3;
-    private const float CHAR_TIME = 2f;
-
-    public float twigChance;
-    public float twigCurliness;
-    public float twigLength;
->>>>>>> parent of c062139 (Levels)
 
     public GameObject burnParticle;
     public GameObject burnLight;
