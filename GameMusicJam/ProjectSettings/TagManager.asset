@@ -5,20 +5,22 @@ TagManager:
   serializedVersion: 2
   tags:
   - solid
+  - Light Source
+  - Goal
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - Light Blocker
+  - 
   - Water
   - UI
   - Player
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
+  - LightBlocker
+  - Plant
+  - Enemy
+  - Goal
+  - Background
+  - Solid
   - 
   - 
   - 
@@ -39,6 +41,24 @@ TagManager:
   - 
   - 
   m_SortingLayers:
+  - name: Background
+    uniqueID: 2921569201
+    locked: 0
+  - name: Misc
+    uniqueID: 3357223991
+    locked: 0
+  - name: Plant
+    uniqueID: 2391651385
+    locked: 0
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Player
+    uniqueID: 2895914321
+    locked: 0
+  - name: Foreground
+    uniqueID: 3629054065
+    locked: 0
+  - name: UI
+    uniqueID: 1062515591
     locked: 0
