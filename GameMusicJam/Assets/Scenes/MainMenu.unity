@@ -425,8 +425,6 @@ MonoBehaviour:
   - Two
   - Privacy
   - Bullseye
-  - Cross
-  - Spiral
   levelButton: {fileID: 7474056594293111413, guid: 17dfc86e8d952344c939acbe2863cfee, type: 3}
   levelListPanel: {fileID: 711683032}
 --- !u!4 &506549107 stripped
